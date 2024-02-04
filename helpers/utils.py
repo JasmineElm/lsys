@@ -10,6 +10,7 @@ import sys
 # import datetime # no longer used here; simple file name generation...
 import math
 from math import pi, cos, sin
+import datetime
 import random
 
 
@@ -168,3 +169,9 @@ def human_values(integer):
 
     print(outstr)
     return outstr
+
+
+
+def date_string():
+    """return the current date as a string"""
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

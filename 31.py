@@ -4,7 +4,7 @@
     Skeleton file for new scripts
 """
 import random
-import datetime
+# import datetime
 import toml
 
 # local libraries
@@ -21,78 +21,6 @@ DEFAULT.update({"DRAWABLE_AREA": svg.set_drawable_area(DEFAULT['PAPER_SIZE'],
                                                        DEFAULT['BLEED'])})
 DEFAULT.update({"FILENAME": utils.create_dir(
     DEFAULT['OUTPUT_DIR']) + utils.generate_filename()})
-
-
-def validate_rule_string(rule_string):
-
-    rule_string = rule_string.replace(
-        "[]", "").replace("+-", "").replace("-+", "")
-    # remove unmatched brackets
-    return rule_string
-
-
-def create_rule_dict(axiom, length):
-    directives = ["F", "+", "-", "[", "]"]
-    # extend directives to include axiom if not already present
-    for char in axiom:
-        if char not in directives:
-            directives.append(char)
-    rules = {}
-    for char in axiom:
-        rules[char] = ""
-        stack = []
-        for _ in range(length):
-            character = random.choice(directives)
-            if character == "[":
-                stack.append(character)
-            if character == "]":
-                if stack:
-                    stack.pop()
-                else:
-                    character = ""
-            rules[char] += character
-        # remove unmatched brackets
-        while stack:
-            rules[char] = rules[char].rpartition('[')[0]
-            stack.pop()
-        rules[char] = validate_rule_string(rules[char])
-    return rules
-
-
-def explain_rules(rules):
-    directives = {"F": "draw", "+": "turn left",
-                  "-": "turn right", "[": "save position",
-                  "]": "restore position"}
-    if len(rules) > 1:
-        for key in rules:
-            for char in rules[key]:
-                if char not in directives:
-                    rules[key] = rules[key].replace(char, rules[char])
-    explanation = ""
-    for key in rules:
-        # build the directives string
-        explanation += f"{key} -> {rules[key]} \n" + \
-            "\n".join([directives[char] for char in rules[key]]) + "\n"
-        return explanation
-
-
-def expand_rules(rules):
-    directives = ["F", "+", "-", "[", "]"]
-    for key in rules:
-        for char in rules[key]:
-            if char not in directives:
-                rules[key] = rules[key].replace(char, rules[char])
-    return rules
-
-
-def set_axiom(length):
-    axiom = "F"
-    length = random.randint(1, length)
-    letters = "xyzabcde"
-    length = random.randint(1, length)
-    if length > 1:
-        axiom += letters[:length]
-    return axiom
 
 
 def set_page_size(object_list):
@@ -150,17 +78,14 @@ def set_svg_comment(comment_dict):
     return comment_string
 
 
-def date_string():
-    """return the current date as a string"""
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 # # LOCAL VARIABLES
 LINE_LENGTH = 150
 ANGLE_DIVS = list(range(3, 16))
 
-AXIOM = set_axiom(4)
-RULES = create_rule_dict(AXIOM, 15)
+AXIOM = lsys.set_axiom(4)
+RULES = lsys.create_rule_dict(AXIOM, 15)
 
 PARAM_DICT = {"TITLE": "LSYS PARAMS", "N": 5, "AXIOM": AXIOM,
               "RULES": RULES,
@@ -168,7 +93,7 @@ PARAM_DICT = {"TITLE": "LSYS PARAMS", "N": 5, "AXIOM": AXIOM,
               "ROTATE_ANGLE": 360/random.choice(ANGLE_DIVS),
               "LINE_LENGTH": LINE_LENGTH,
               "START_POS": (0, 0),
-              "CREATED": date_string()}
+              "CREATED": utils.date_string()}
 utils.print_params(PARAM_DICT)
 
 
