@@ -432,3 +432,15 @@ def set_clip_path(viewbox):
         + f"L{viewbox[2]} {viewbox[1]} L{viewbox[2]} {viewbox[3]} " \
         + f"L{viewbox[0]} {viewbox[3]} L{viewbox[0]} {viewbox[1]}' " \
         + "fill='none' /></clipPath></defs>"
+
+
+def set_comment(comment_dict):
+    """add a comment to the SVG file"""
+    comment_string = "<!--\n"
+    for key, value in comment_dict.items():
+        if key == "RULES":
+            value = str(value)
+            value = value.replace("--", "- -").replace("--", "+ - -")
+        comment_string += f"{key}: {value}\n"
+    comment_string += "-->"
+    return comment_string

@@ -3,6 +3,7 @@
 import random
 import math
 
+
 def set_lsys_string(axiom, rules, n):
     """
     Generates a string of characters based on the axiom and rules.
@@ -19,7 +20,6 @@ def set_lsys_string(axiom, rules, n):
     for _ in range(n):
         string = "".join([rules.get(c, c) for c in string])
     return string
-
 
 
 def lsys_to_lines(lsys, start_xy, angle, length, angle_offset):
@@ -56,8 +56,6 @@ def lsys_to_lines(lsys, start_xy, angle, length, angle_offset):
         elif c == "X":
             pass
     return lines
-
-
 
 
 def validate_rule_string(rule_string):

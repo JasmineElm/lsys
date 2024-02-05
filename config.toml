@@ -3,7 +3,7 @@ TITLE = 'DEFAULT PARAMETERS'
 SIZE = [297, 420]    # A3
 LANDSCAPE = true
 PPMM = 10
-BLEED = [5,5]
+BLEED = 20
 OUTPUT_DIR = 'output/'
     [DEFAULT.LINE_STYLE]
     stroke = '#000'
