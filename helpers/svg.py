@@ -53,7 +53,7 @@ def set_landscape(paper_size, landscape):
 
 
 def set_drawable_area(paper_size, bleed_xy):
-    """ returns a tuple of the drawable area defined by the bleed
+    """returns a tuple of the drawable area defined by the bleed
 
     Args:
         paper_size (tuple): (width, height)
@@ -62,8 +62,8 @@ def set_drawable_area(paper_size, bleed_xy):
     Returns:
         tuple: (min_x, min_y, width, height)
     """
-    min_x = int((paper_size[0] * bleed_xy[0] / 100)/2)
-    min_y = int((paper_size[1] * bleed_xy[1] / 100)/2)
+    min_x = int((paper_size[0] * bleed_xy[0] / 100) / 2)
+    min_y = int((paper_size[1] * bleed_xy[1] / 100) / 2)
     width = paper_size[0] - (min_x * 2)
     height = paper_size[1] - (min_y * 2)
     return (min_x, min_y, width, height)
@@ -78,12 +78,15 @@ def viewbox_to_drawable_area(viewbox):
 
 
 def is_in_drawable_area(xy1, xy2, viewbox):
-    """ return True if both points are in drawable_area """
+    """return True if both points are in drawable_area"""
     drawable_area = viewbox_to_drawable_area(viewbox)
-    return (drawable_area[0] <= xy1[0] <= drawable_area[2] and
-            drawable_area[1] <= xy1[1] <= drawable_area[3] and
-            drawable_area[0] <= xy2[0] <= drawable_area[2] and
-            drawable_area[1] <= xy2[1] <= drawable_area[3])
+    return (
+        drawable_area[0] <= xy1[0] <= drawable_area[2]
+        and drawable_area[1] <= xy1[1] <= drawable_area[3]
+        and drawable_area[0] <= xy2[0] <= drawable_area[2]
+        and drawable_area[1] <= xy2[1] <= drawable_area[3]
+    )
+
 
 # Circles
 
@@ -101,20 +104,23 @@ def calculate_max_radius(drawable_area):
       int: The maximum radius that can be used for concentric circles on the
       canvas.
     """
-    return min(drawable_area[3] - drawable_area[1],
-               drawable_area[2] - drawable_area[0]) * 0.5
+    return (
+        min(drawable_area[3] - drawable_area[1], drawable_area[2] - drawable_area[0])
+        * 0.5
+    )
 
 
 def set_circle(drawable_area, size=0.95):
-    """ set the xy, radius for the largest circle that fits in drawable_area
-        circle will be centred on both axes, and be 95% of the smallest
-        drawable_area dimension
+    """set the xy, radius for the largest circle that fits in drawable_area
+    circle will be centred on both axes, and be 95% of the smallest
+    drawable_area dimension
     """
     pos_x = (drawable_area[0] + drawable_area[2]) / 2
     pos_y = (drawable_area[1] + drawable_area[3]) / 2
     pos_xy = [pos_x, pos_y]
     radius = calculate_max_radius(drawable_area) * size
     return (pos_xy, radius)
+
 
 # Header and footer
 
@@ -142,11 +148,12 @@ def svg_footer():
     """return the SVG footer"""
     return "</svg>"
 
+
 # build SVG file
 
 
 def svg_list_to_string(svg_list, mini=False):
-    """ convert a list of SVG lines to a string """
+    """convert a list of SVG lines to a string"""
     if mini:
         return "".join(svg_list)
     else:
@@ -154,10 +161,10 @@ def svg_list_to_string(svg_list, mini=False):
 
 
 def build_svg_file(paper_size, drawable_area, svg_list):
-    """ build the SVG file from the following parts:
-        header
-        svg_list
-        footer
+    """build the SVG file from the following parts:
+    header
+    svg_list
+    footer
     """
     # if svg_list is empty, break with warning
     if not svg_list:
@@ -169,7 +176,7 @@ def build_svg_file(paper_size, drawable_area, svg_list):
 
 
 def write_file(filename, svg_list, mini=False):
-    """ Write the SVG file """
+    """Write the SVG file"""
     # calculate size of output file
     # if svg_list is empty, break with warning
     if not svg_list:
@@ -193,18 +200,20 @@ def write_file(filename, svg_list, mini=False):
 
 # overlap functions
 
+
 def circles_intersect(circle_a, circle_b):
-    """ return True if circles intersect """
-    distance = math.sqrt((circle_a[0] - circle_b[0])**2 +
-                         (circle_a[1] - circle_b[1])**2)
+    """return True if circles intersect"""
+    distance = math.sqrt(
+        (circle_a[0] - circle_b[0]) ** 2 + (circle_a[1] - circle_b[1]) ** 2
+    )
     # return True if distance between centres is less than sum of radii
     return distance < circle_a[2] + circle_b[2]
 
 
 def set_bounding_box(points_list):
-    """ return a bounding box for a list of points """
-    min_x = min_y = float('inf')
-    max_x = max_y = float('-inf')
+    """return a bounding box for a list of points"""
+    min_x = min_y = float("inf")
+    max_x = max_y = float("-inf")
 
     for point in points_list:
         x, y = point
@@ -217,9 +226,13 @@ def set_bounding_box(points_list):
 
 
 def bounding_box_intersect(box_a, box_b):
-    """ return True if bounding boxes overlap """
-    if box_a[2] < box_b[0] or box_a[0] > box_b[2] or \
-       box_a[3] < box_b[1] or box_a[1] > box_b[3]:
+    """return True if bounding boxes overlap"""
+    if (
+        box_a[2] < box_b[0]
+        or box_a[0] > box_b[2]
+        or box_a[3] < box_b[1]
+        or box_a[1] > box_b[3]
+    ):
         return False
     return True
 
@@ -254,12 +267,12 @@ def get_centre(viewbox):
     """Return the centre of the canvas"""
     diff_x = viewbox[2] - viewbox[0]
     diff_y = viewbox[3] - viewbox[1]
-    return ((diff_x / 2)+viewbox[0], (diff_y / 2)+viewbox[1])
+    return ((diff_x / 2) + viewbox[0], (diff_y / 2) + viewbox[1])
 
 
 def get_random_point(viewbox, quantize=1):
     """Return a random point within the canvas
-       quantize is the number of pixels to quantize to"""
+    quantize is the number of pixels to quantize to"""
     # generate and quantize x
     x_range_quantized = range(viewbox[0], viewbox[2], quantize)
     y_range_quantized = range(viewbox[1], viewbox[3], quantize)
@@ -279,8 +292,9 @@ def set_polygon_size(viewable_area, polygons_per_min_dimension):
     returns:
         int: size of polygon
     """
-    smallest_dimension = min(viewable_area[2] - viewable_area[0],
-                             viewable_area[3] - viewable_area[1])
+    smallest_dimension = min(
+        viewable_area[2] - viewable_area[0], viewable_area[3] - viewable_area[1]
+    )
     return int(smallest_dimension / polygons_per_min_dimension)
 
 
@@ -302,14 +316,15 @@ def set_polygon(xy, polygon_size, points):
         polygon.append(xy[1] + math.sin(angle) * polygon_size / 2)
     return polygon
 
+
 # Grid functions
 
 
 def generate_square_grid(canvas, grid_size, noise=0.05):
     """return a list of points that fit within the grid
-        grid begins at canvas[0] + grid_size, canvas[1] + grid_size
-        grid ends at canvas[2] - grid_size, canvas[3] - grid_size
-        noise is a percentage of the grid_size"""
+    grid begins at canvas[0] + grid_size, canvas[1] + grid_size
+    grid ends at canvas[2] - grid_size, canvas[3] - grid_size
+    noise is a percentage of the grid_size"""
     # store canvas boundaries in variables
     x_start = canvas[0]
     y_start = canvas[1]
@@ -318,15 +333,21 @@ def generate_square_grid(canvas, grid_size, noise=0.05):
 
     # if noise is 0, use list comprehension
     if noise == 0:
-        return [(x, y)
-                for x in range(x_start, x_end, grid_size)
-                for y in range(y_start, y_end, grid_size)]
+        return [
+            (x, y)
+            for x in range(x_start, x_end, grid_size)
+            for y in range(y_start, y_end, grid_size)
+        ]
 
     # if noise is not 0, use generator expression
-    return ((x + random.uniform(-grid_size * noise, grid_size * noise),
-             y + random.uniform(-grid_size * noise, grid_size * noise))
-            for x in range(x_start, x_end, grid_size)
-            for y in range(y_start, y_end, grid_size))
+    return (
+        (
+            x + random.uniform(-grid_size * noise, grid_size * noise),
+            y + random.uniform(-grid_size * noise, grid_size * noise),
+        )
+        for x in range(x_start, x_end, grid_size)
+        for y in range(y_start, y_end, grid_size)
+    )
 
 
 def get_min_dimension(viewbox):
@@ -362,8 +383,9 @@ def join_points(point, neighbours, direction, sparseness=0.5, diag_def=3):
     direction sets the direction of the line; horizontal, vertical, diagonal
     sparseness is whether to return all points or a subset"""
     # filter neighbours by direction
-    neighbours = [n for n in neighbours
-                  if get_relationships(point, n, diag_def) == direction]
+    neighbours = [
+        n for n in neighbours if get_relationships(point, n, diag_def) == direction
+    ]
     # filter this list by sparseness
     neighbours = [n for n in neighbours if random.random() > sparseness]
     # return a list of tuples of [start, end] points
@@ -372,20 +394,26 @@ def join_points(point, neighbours, direction, sparseness=0.5, diag_def=3):
 
 def get_neighbours(point, grid, radius):
     """return a list of points within radius of point"""
-    return [p for p in grid if (point[0] - radius <= p[0] <= point[0] + radius
-                                and point[1] - radius <=
-                                p[1] <= point[1] + radius)]
+    return [
+        p
+        for p in grid
+        if (
+            point[0] - radius <= p[0] <= point[0] + radius
+            and point[1] - radius <= p[1] <= point[1] + radius
+        )
+    ]
 
 
 def get_random_colour():
     """Return a random hex colour string."""
-    hex_colour = "#"+hex(random.randint(0, 16777215))[2:]
+    hex_colour = "#" + hex(random.randint(0, 16777215))[2:]
     return hex_colour
 
 
 def get_random_mono_colour():
+    """Return a random hex colour string with all RGB values the same."""
     # RBG all same value
-    hex_colour = "#"+hex(random.randint(0, 255))[2:]
+    hex_colour = "#" + hex(random.randint(0, 255))[2:]
     print(f"hex_colour: {hex_colour}")
     return hex_colour
 
@@ -401,11 +429,6 @@ def get_random_coordinates(canvas):
     return (x, y)
 
 
-def convert_to_png(svg_filename, dpi):
-    """convert an SVG file to PNG"""
-    cairosvg.svg2png(url=svg_filename, write_to=svg_filename+".png", dpi=dpi)
-
-
 def points_to_path(points, addnl_tags):
     """convert a list of points to an SVG path"""
     path = f"<path d='M {points[0][0]} {points[0][1]} "
@@ -415,23 +438,6 @@ def points_to_path(points, addnl_tags):
     path += dict_to_tags(addnl_tags)
     path += "/>"
     return path
-
-
-def set_background(viewbox, colour):
-    """set a path rectangle of colour the size of the viewbox"""
-    return f"<path id='background' d='M{viewbox[0]} {viewbox[1]} " \
-        + f"L{viewbox[2]} {viewbox[1]} L{viewbox[2]} {viewbox[3]} " \
-        + f"L{viewbox[0]} {viewbox[3]} L{viewbox[0]} {viewbox[1]}' " \
-        + f"fill='{colour}'/>"
-
-
-def set_clip_path(viewbox):
-    """set a path rectangle of colour the size of the viewbox"""
-    return "<defs><clipPath id='clip'><path id='background' " \
-        + f"d='M{viewbox[0]} {viewbox[1]} " \
-        + f"L{viewbox[2]} {viewbox[1]} L{viewbox[2]} {viewbox[3]} " \
-        + f"L{viewbox[0]} {viewbox[3]} L{viewbox[0]} {viewbox[1]}' " \
-        + "fill='none' /></clipPath></defs>"
 
 
 def set_comment(comment_dict):

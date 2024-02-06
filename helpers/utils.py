@@ -8,8 +8,7 @@
 import os
 import sys
 # import datetime # no longer used here; simple file name generation...
-import math
-from math import pi, cos, sin
+from math import pi, cos, sin, ceil, floor
 import datetime
 import random
 
@@ -77,10 +76,10 @@ def quantize(value, step, strategy="floor"):
 
     # if floor, round down to nearest step
     if strategy == "floor":
-        ret_val = int(math.floor(value_div_step) * step)
+        ret_val = int(floor(value_div_step) * step)
     # if ceil, round up to nearest step
     elif strategy == "ceil":
-        ret_val = int(math.ceil(value_div_step) * step)
+        ret_val = int(ceil(value_div_step) * step)
     # if round, round to nearest step
     elif strategy == "round":
         ret_val = int(round(value_div_step) * step)
