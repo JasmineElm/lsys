@@ -79,6 +79,25 @@ def set_image_size(viewbox):
             (viewbox[3]-viewbox[1]))
 
 
+# function to translate a list of coordinates
+# to have positive values
+
+def set_precision(value, precision=3):
+    """set the precision of a float"""
+    return round(value, precision)
+
+
+def translate_coords(object_list):
+    """translate a list of coordinates to have positive values"""
+    min_x = min(min(obj[i][0] for i in range(2)) for obj in object_list)
+    min_y = min(min(obj[i][1] for i in range(2)) for obj in object_list)
+    x_offset = abs(min_x)
+    y_offset = abs(min_y)
+    new_object_list = [((obj[0][0] + x_offset, obj[0][1] + y_offset),
+                        (obj[1][0] + x_offset, obj[1][1] + y_offset)) for obj in object_list]
+    return new_object_list
+
+
 # # LOCAL VARIABLES
 LINE_LENGTH = 150
 ANGLE_DIVS = list(range(3, 9))
@@ -127,10 +146,15 @@ while True:
         break
     print(f"{tree} has {len(lines)} lines, trying again (attempt {try_count})")
 utils.print_params(PARAM_DICT)
+lines = [((set_precision(line[0][0]), set_precision(line[0][1])),
+          (set_precision(line[1][0]), set_precision(line[1][1]))) for line in lines]
+lines = translate_coords(lines)
 DEFAULT['DRAWABLE_AREA'] = set_viewbox(lines, DEFAULT['BLEED'])
 DEFAULT['PAPER_SIZE'] = set_image_size(DEFAULT['DRAWABLE_AREA']
                                        )
-
+expanded_rules = lsys.expand_rules(PARAM_DICT["RULES"])
+# print(expanded_rules)
+print(lsys.rule_to_filename(PARAM_DICT["RULES"]))
 
 svg_list.append(svg.set_comment(PARAM_DICT))
 utils.print_params(DEFAULT)

@@ -2,7 +2,7 @@
 """
 import random
 import math
-
+import re
 
 def set_lsys_string(axiom, rules, n):
     """
@@ -59,10 +59,28 @@ def lsys_to_lines(lsys, start_xy, angle, length, angle_offset):
 
 
 def validate_rule_string(rule_string):
-    rule_string = rule_string.replace(
-        "[]", "").replace("+-", "").replace("-+", "")
+    """replaces cancelling characters in a rule string
+    ensures that the rule string is will produce a logical
+    result when applied to the axiom
+
+    Args:
+        rule_string (string): a string of characters
+
+    Returns:
+        _type_: _description_
+    """
+    
+
+    # Remove unnecessary characters with a single regular expression
+    rule_string = re.sub(r'\[\]|(\+-)|(-\+)', '', rule_string)
+
+    # Check if the rule string contains a draw directive and prepend one if not
+    if 'F' not in rule_string:
+        rule_string = 'F' + rule_string
+
     # remove unmatched brackets
     return rule_string
+
 
 
 def create_rule_dict(axiom, length):
@@ -112,12 +130,24 @@ def explain_rules(rules):
 
 def expand_rules(rules):
     directives = ["F", "+", "-", "[", "]"]
-    for key in rules:
-        for char in rules[key]:
-            if char not in directives:
-                rules[key] = rules[key].replace(char, rules[char])
-    return rules
+    rule = ""
+    pass
+    # flatten the dictionary into a single string
+    # e.g., {'F': 'x+Fy-xy-Fy', 'x': 'F+yx+', 'y': 'xx--[y-]xF-F'}
+    # F -> x+Fy-xy-Fy
+    # x -> F+yx+
+    # y -> xx--[y-]xF-F
+    # becomes F -> x+Fy-xy-Fy, x -> F+yx+, y -> xx--[y-]xF-F
+    # and then the string is expanded to include the directives
 
+def rule_to_filename(rule):
+    # take a dictionary of rules and convert it to a filename
+    # e.g., {'F': 'x+Fy-xy-Fy', 'x': 'F+yx+', 'y': 'xx--[y-]xF-F'}
+    # becomes F_x+Fy-xy-Fy_x_F+yx+_y_xx--[y-]xF-F
+    fn=""
+    for key in rule:
+        fn += f"{key}_{rule[key]}_"
+    return fn[:-1]
 
 def set_axiom(length):
     axiom = "F"
