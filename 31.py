@@ -63,6 +63,16 @@ def translate_coords(object_list):
     return new_object_list
 
 
+
+
+def set_angle(divisor_list):
+    """set the angle based on a list of divisors"""
+    angle = 360
+    while angle == 360:
+        angle = (360/random.choice(divisor_list) *
+                 random.choice(divisor_list)) % 360
+    return angle
+
 # # LOCAL VARIABLES
 LINE_LENGTH = 150
 ANGLE_DIVS = list(range(3, 9))
@@ -94,14 +104,16 @@ while True:
                   "N": 5,
                   "AXIOM": axiom,
                   "RULES": rules,
-                  "INITIAL_ANGLE": 360/random.choice(ANGLE_DIVS)*random.choice(ANGLE_DIVS),
-                  "ROTATE_ANGLE": 360/random.choice(ANGLE_DIVS)*random.choice(ANGLE_DIVS),
+                  "INITIAL_ANGLE": 90,
+                  #   "INITIAL_ANGLE": 360/random.choice(ANGLE_DIVS)*random.choice(ANGLE_DIVS),
+                  "ROTATE_ANGLE": set_angle(ANGLE_DIVS),
                   "LINE_LENGTH": LINE_LENGTH,
                   "START_POS": (0, 0),
                   "CREATED": utils.date_string()}
     tree = lsys.set_lsys_string(PARAM_DICT["AXIOM"],
                                 PARAM_DICT["RULES"],
                                 PARAM_DICT["N"])
+
     lines = lsys.lsys_to_lines(tree, PARAM_DICT["START_POS"],
                                PARAM_DICT["INITIAL_ANGLE"],
                                PARAM_DICT["LINE_LENGTH"],
@@ -109,7 +121,7 @@ while True:
     if len(lines) >= 5:
         break
     print(f"{tree} has {len(lines)} lines, trying again (attempt {try_count})")
-utils.print_params(PARAM_DICT)
+
 lines = [((set_precision(line[0][0]), set_precision(line[0][1])),
           (set_precision(line[1][0]), set_precision(line[1][1]))) for line in lines]
 lines = translate_coords(lines)
@@ -132,3 +144,6 @@ doc = svg.build_svg_file(DEFAULT['PAPER_SIZE'],
 
 
 svg.write_file(DEFAULT['FILENAME'], doc)
+utils.print_params(PARAM_DICT)
+print(str(len(tree)*PARAM_DICT["N"]))
+
