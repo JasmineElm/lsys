@@ -1,7 +1,12 @@
 [DEFAULT]
 TITLE = 'DEFAULT PARAMETERS'
 BLEED = 20
-OUTPUT_DIR = 'output/'
+RECURSION_DEPTH = 7
+PPMM = 10
+PAPER_SIZE = [297, 420]
+MM_BLEED = 20
+PRECISION = 0
+OUTPUT_DIR = '../output/'
     [DEFAULT.LINE_STYLE]
     stroke = '#000'
     stroke-width = 10
