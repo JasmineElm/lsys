@@ -1,13 +1,39 @@
 [DEFAULT]
+# Title printed in logs for this parameter set
 TITLE = 'DEFAULT PARAMETERS'
+
+# Rule generation mode: 'geometric' (deterministic) or 'stochastic' (randomized variations)
+PARADIGM = 'geometric'
+
+# Margin padding (in mms) to keep the drawing away from the edge
 BLEED = 20
-RECURSION_DEPTH = 7
+
+# Number of rule variations to generate per character when using 'stochastic' PARADIGM
+OPTIONS_PER_RULE = 5
+
+# Number of iterations to apply the L-System rules to the axiom tree
+RECURSION_DEPTH = 13
+
+# Pixels per mm conversion scaling factor
 PPMM = 10
+
+# Base size of the paper/canvas in mm: [width, height]
 PAPER_SIZE = [297, 420]
-MM_BLEED = 20
+# Background colour for the SVG canvas, 'none' for transparent
+BACKGROUND_COLOR = 'white'
+
+# Number of decimal places to round coordinate geometry (0 = integers, smaller file size)
 PRECISION = 0
+
+# Acceptable divisors of 360 used to generate angles
+ANGLE_DIVISORS = [3, 4, 5, 6, 8, 10, 12]
+
+# Directory path where generated SVG files will be saved
 OUTPUT_DIR = '../output/'
+
+    # SVG styling attributes for the drawn path lines
     [DEFAULT.LINE_STYLE]
     stroke = '#000'
     stroke-width = 10
     stroke-linecap = 'round'
+
