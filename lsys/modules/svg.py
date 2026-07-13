@@ -100,7 +100,7 @@ def set_comment(comment_dict: dict[str, Any]) -> str:
     return comment_string
 
 
-def scale_to_fit(object_list: list[tuple[tuple[float, float], tuple[float, float]]], target_size: Sequence[float | int], bleed: float) -> list[tuple[tuple[float, float], tuple[float, float]]]:
+def scale_to_fit(object_list: list[tuple[tuple[float, float], tuple[float, float], float]], target_size: Sequence[float | int], bleed: float) -> list[tuple[tuple[float, float], tuple[float, float], float]]:
     """
     Scale and center a list of line coordinates to fit exactly within
     target_size (width, height) minus bleed on all sides, maintaining aspect ratio.
@@ -108,8 +108,8 @@ def scale_to_fit(object_list: list[tuple[tuple[float, float], tuple[float, float
     if not object_list:
         sys.exit("Object list is empty")
 
-    xs = [coord[0] for obj in object_list for coord in obj]
-    ys = [coord[1] for obj in object_list for coord in obj]
+    xs = [coord[0] for obj in object_list for coord in (obj[0], obj[1])]
+    ys = [coord[1] for obj in object_list for coord in (obj[0], obj[1])]
     min_x, max_x = min(xs), max(xs)
     min_y, max_y = min(ys), max(ys)
 
@@ -137,6 +137,7 @@ def scale_to_fit(object_list: list[tuple[tuple[float, float], tuple[float, float
         (
             (obj[0][0] * scale + x_offset, obj[0][1] * scale + y_offset),
             (obj[1][0] * scale + x_offset, obj[1][1] * scale + y_offset),
+            obj[2] if len(obj) > 2 else 1.0
         )
         for obj in object_list
     ]

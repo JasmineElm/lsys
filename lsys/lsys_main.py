@@ -57,7 +57,7 @@ def main():
     print(f"Default parameters: {DEFAULT}")
 
     # LOCAL VARIABLES
-    LINE_LENGTH = 150
+    LINE_LENGTH = DEFAULT.get("LINE_LENGTH", 150)
     ANGLE_DIVS = DEFAULT.get("ANGLE_DIVISORS", [3, 4, 5, 6, 8, 10, 12])
     RECURSION_DEPTH = args.recursion if args.recursion is not None else DEFAULT["RECURSION_DEPTH"]
 
@@ -71,7 +71,7 @@ def main():
         "N": DEFAULT["RECURSION_DEPTH"],
         "AXIOM": AXIOM,
         "RULES": RULES,
-        "INITIAL_ANGLE": args.angle if args.angle is not None else lsys.set_angle(ANGLE_DIVS),
+        "INITIAL_ANGLE": args.initial_angle if args.initial_angle is not None else lsys.set_angle(ANGLE_DIVS),
         "ROTATE_ANGLE": args.rotation if args.rotation is not None else lsys.set_angle(ANGLE_DIVS),
         "LINE_LENGTH": LINE_LENGTH,
         "CREATED": utils.date_string(),
@@ -81,16 +81,27 @@ def main():
     svg_list = []
 
     TRY_COUNT = 0
-    if args.string:
-        tree = args.string
+    if args.rules:
+        parsed_string = utils.string_to_dict(args.rules)
+        if "str" in parsed_string and len(parsed_string) == 1:
+            tree = parsed_string["str"]
+            axiom = "N/A"
+            rules = {}
+            n_iters = 1
+        else:
+            rules = parsed_string
+            axiom = args.axiom
+            n_iters = RECURSION_DEPTH
+            tree = lsys.set_lsys_string(axiom, rules, n_iters)
+
         divisor = random.choice(ANGLE_DIVS)
         PARAM_DICT = {
-            "TITLE": "USER DEFINED LSYS",
+            "TITLE": args.title if args.title is not None else "USER DEFINED LSYS",
             "PARADIGM": "N/A",
-            "N": 1,
-            "AXIOM": "N/A",
-            "RULES": {},
-            "INITIAL_ANGLE": args.angle if args.angle is not None else 90,
+            "N": n_iters,
+            "AXIOM": axiom,
+            "RULES": rules,
+            "INITIAL_ANGLE": args.initial_angle if args.initial_angle is not None else 90,
             "ROTATE_ANGLE": args.rotation if args.rotation is not None else 360 / divisor,
             "LINE_LENGTH": LINE_LENGTH,
             "CREATED": utils.date_string(),
@@ -100,6 +111,10 @@ def main():
             PARAM_DICT["INITIAL_ANGLE"],
             PARAM_DICT["LINE_LENGTH"],
             PARAM_DICT["ROTATE_ANGLE"],
+            weight=DEFAULT.get("LINE_STYLE", {}).get("stroke-width", 10),
+            scale=args.scale,
+            angle_increment=args.angle_increment,
+            weight_increment=args.weight_increment
         )
     else:
         while True:
@@ -117,7 +132,7 @@ def main():
                 "N": RECURSION_DEPTH,
                 "AXIOM": axiom,
                 "RULES": rules,
-                "INITIAL_ANGLE": args.angle if args.angle is not None else 90,
+                "INITIAL_ANGLE": args.initial_angle if args.initial_angle is not None else 90,
                 "ROTATE_ANGLE": args.rotation if args.rotation is not None else 360 / divisor,
                 "LINE_LENGTH": LINE_LENGTH,
                 "CREATED": utils.date_string(),
@@ -131,6 +146,10 @@ def main():
                 PARAM_DICT["INITIAL_ANGLE"],
                 PARAM_DICT["LINE_LENGTH"],
                 PARAM_DICT["ROTATE_ANGLE"],
+                weight=DEFAULT.get("LINE_STYLE", {}).get("stroke-width", 10),
+                scale=args.scale,
+                angle_increment=args.angle_increment,
+                weight_increment=args.weight_increment
             )
             if len(lines) >= 5:
                 break
@@ -151,7 +170,7 @@ def main():
                 ),
             ]
         )
-        processed_lines.append((pts[0], pts[1]))
+        processed_lines.append((pts[0], pts[1], line[2]))
     unique_lines = list(set(processed_lines))
 
     if len(unique_lines) < 5:
@@ -165,7 +184,10 @@ def main():
 
     # draw the lines
     for line in scaled_lines:
-        svg_list.append(svg.line(line[0], line[1], DEFAULT["LINE_STYLE"]))
+        style = DEFAULT["LINE_STYLE"].copy()
+        if line[2] is not None:
+            style["stroke-width"] = line[2]
+        svg_list.append(svg.line(line[0], line[1], style))
 
     # set the viewbox and paper size to the requested IMAGE_SIZE
     DEFAULT["PAPER_SIZE"] = DEFAULT["IMAGE_SIZE"]
@@ -188,8 +210,12 @@ def main():
     )
     output_dir = base_dir / DEFAULT["OUTPUT_DIR"]
     
-    if args.string:
-        base_filename = lsys.generate_filename(utils.string_to_dict(args.string[:200]))
+    if args.rules:
+        parsed_string = utils.string_to_dict(args.rules)
+        if "str" in parsed_string and len(parsed_string) == 1:
+            base_filename = lsys.generate_filename(parsed_string)
+        else:
+            base_filename = lsys.generate_filename(parsed_string)
     else:
         base_filename = lsys.generate_filename(PARAM_DICT['RULES'])
         

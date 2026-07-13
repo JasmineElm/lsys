@@ -2,7 +2,11 @@
 # Title printed in logs for this parameter set
 TITLE = 'DEFAULT PARAMETERS'
 
-# Rule generation mode: 'geometric' (deterministic) or 'stochastic' (randomized variations)
+# Rule generation mode: 'geometric', 'stochastic', 'extended-geometric', 'extended-stochastic'
+# `geometric`: deterministic, uses existing instructions to generate rules
+# `stochastic`: random variations to rules
+# `extended-geometric`: deterministic, adds new instructions  for a more organic result
+# `extended-stochastic`: both 
 PARADIGM = 'geometric'
 
 # Margin padding (in mms) to keep the drawing away from the edge
@@ -16,6 +20,9 @@ RECURSION_DEPTH = 13
 
 # Pixels per mm conversion scaling factor
 PPMM = 10
+
+# Base Line Length; how long is a "standard" line?
+LINE_LENGTH = 150
 
 # Base size of the paper/canvas in mm: [width, height]
 PAPER_SIZE = [297, 420]
@@ -34,6 +41,6 @@ OUTPUT_DIR = '../output/'
     # SVG styling attributes for the drawn path lines
     [DEFAULT.LINE_STYLE]
     stroke = '#000'
-    stroke-width = 10
-    stroke-linecap = 'round'
+    stroke-width = 5
+    stroke-linecap = 'square'
 
