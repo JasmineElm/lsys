@@ -5,8 +5,8 @@ def extract_comment(filepath: str) -> str:
     with open(filepath, 'r') as f:
         content = f.read()
     
-    # Looking for a comment block containing TITLE: LSYS PARAMS
-    match = re.search(r'<!--\s*(TITLE: LSYS PARAMS.*?)\s*-->', content, re.DOTALL)
+    # Looking for a comment block containing TITLE
+    match = re.search(r'<!--\s*(TITLE:.*?)\s*-->', content, re.DOTALL)
     if match:
         return match.group(1)
     return ""
