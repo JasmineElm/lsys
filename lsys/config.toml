@@ -38,6 +38,9 @@ ANGLE_DIVISORS = [3, 4, 5, 6, 8, 10, 12]
 # Directory path where generated SVG files will be saved
 OUTPUT_DIR = '../output/'
 
+# Filename syntax: 'datetime', 'rules', or 'unix'
+FILENAME = 'rules'
+
     # SVG styling attributes for the drawn path lines
     [DEFAULT.LINE_STYLE]
     stroke = '#000'

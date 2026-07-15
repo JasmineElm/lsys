@@ -6,16 +6,25 @@ Skeleton file for new scripts
 
 import random
 import sys
+import time
 import tomllib
 from pathlib import Path
 from typing import Any
 
 # local libraries from the helpers directory
-from modules import cli, lsys, svg, utils
+from modules import cli, lsys, read, svg, utils
 
 
 def main():
     args = cli.get_args()
+
+    if args.read:
+        command = read.build_commandline(args.read)
+        if command:
+            print(command)
+        else:
+            print(f"Could not read params from {args.read}")
+        return
 
     # Load config file and set DEFAULT parameters
     base_dir = Path(__file__).resolve().parent
@@ -43,6 +52,8 @@ def main():
         DEFAULT["ANGLE_DIVISORS"] = args.angle_divisors
     if args.output_dir is not None:
         DEFAULT["OUTPUT_DIR"] = args.output_dir
+    if args.filename is not None:
+        DEFAULT["FILENAME"] = args.filename
 
     DEFAULT.update(
         {
@@ -210,24 +221,30 @@ def main():
     )
     output_dir = base_dir / DEFAULT["OUTPUT_DIR"]
     
-    if args.rules:
-        parsed_string = utils.string_to_dict(args.rules)
-        if "str" in parsed_string and len(parsed_string) == 1:
-            base_filename = lsys.generate_filename(parsed_string)
-        else:
-            base_filename = lsys.generate_filename(parsed_string)
+    filename_pref = DEFAULT.get("FILENAME")
+    if filename_pref == "datetime":
+        base_filename = utils.date_string()
+    elif filename_pref == "unix":
+        base_filename = str(int(time.time() * 1000))
     else:
-        base_filename = lsys.generate_filename(PARAM_DICT['RULES'])
+        if args.rules:
+            parsed_string = utils.string_to_dict(args.rules)
+            if "str" in parsed_string and len(parsed_string) == 1:
+                base_filename = lsys.generate_filename(parsed_string)
+            else:
+                base_filename = lsys.generate_filename(parsed_string)
+        else:
+            base_filename = lsys.generate_filename(PARAM_DICT['RULES'])
         
     DEFAULT.update(
         {
-            "FILENAME": str(
+            "OUTPUT_FILEPATH": str(
                 Path(utils.create_dir(output_dir)).resolve()
                 / f"{base_filename}.svg"
             )
         }
     )
-    svg.write_file(DEFAULT["FILENAME"], doc)
+    svg.write_file(DEFAULT["OUTPUT_FILEPATH"], doc)
     utils.print_params(PARAM_DICT)
     print(str(len(tree) * PARAM_DICT["N"]))
 

@@ -2,3 +2,5 @@ __pycache__/
 output/*
 *.bak
 .DS_Store
+.vscode/
+keepers/*

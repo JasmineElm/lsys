@@ -45,4 +45,6 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("--scale", type=float, default=1.2, help="Scale multiplier for length (< >)")
     parser.add_argument("--angle-increment", type=float, default=15.0, help="Angle increment for rotation ( ( ) )")
     parser.add_argument("--weight-increment", type=float, default=1.0, help="Weight increment for line thickness (# !)")
+    parser.add_argument("--read", type=str, help="Read an SVG file and output the command line arguments to recreate it", default=None)
+    parser.add_argument("--filename", type=str, choices=["datetime", "rules", "unix"], help="Syntax for generating output filenames")
     return parser.parse_args()
