@@ -52,4 +52,5 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("--filename", type=str, choices=["datetime", "rules", "unix"], help="Syntax for generating output filenames")
     parser.add_argument("--merge", action=argparse.BooleanOptionalAction, help="Merge continuous lines with the same vector")
     parser.add_argument("--optimise-travel", action=argparse.BooleanOptionalAction, help="Optimise plotter travel distance (TSP)")
+    parser.add_argument("--compound-paths", action=argparse.BooleanOptionalAction, help="Combine continuous lines into compound SVG paths")
     return parser.parse_args()

@@ -144,14 +144,29 @@ def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
         sys.exit("Not enough lines to draw")
 
     # scale and center the lines to fit exactly within IMAGE_SIZE
-    scaled_lines = svg.scale_to_fit(
+    scaled_lines_raw = svg.scale_to_fit(
         unique_lines, DEFAULT["IMAGE_SIZE"], DEFAULT["BLEED"]
     )
+    scaled_lines = []
+    for line in scaled_lines_raw:
+        pts = [
+            (
+                utils.set_precision(line[0][0], DEFAULT["PRECISION"]),
+                utils.set_precision(line[0][1], DEFAULT["PRECISION"]),
+            ),
+            (
+                utils.set_precision(line[1][0], DEFAULT["PRECISION"]),
+                utils.set_precision(line[1][1], DEFAULT["PRECISION"]),
+            ),
+        ]
+        scaled_lines.append((pts[0], pts[1], line[2]))
 
     # group and draw the lines
     groups = {}
     for line in scaled_lines:
         style = DEFAULT.get("LINE_STYLE", {}).copy()
+        if "fill" not in style:
+            style["fill"] = "none"
         if line[2] is not None:
             style["stroke-width"] = line[2]
         
@@ -168,8 +183,21 @@ def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
         group_style = svg.dict_to_tags(style_dict)
         group_tag = f"<g {group_style}>" if group_style else "<g>"
         svg_list.append(group_tag)
-        for line in lines:
-            svg_list.append(svg.line(line[0], line[1]))
+        
+        if DEFAULT.get("COMPOUND_PATHS", False) and lines:
+            current_path = [lines[0][0], lines[0][1]]
+            for line in lines[1:]:
+                if line[0] == current_path[-1]:
+                    current_path.append(line[1])
+                else:
+                    svg_list.append(svg.path(current_path))
+                    current_path = [line[0], line[1]]
+            if current_path:
+                svg_list.append(svg.path(current_path))
+        else:
+            for line in lines:
+                svg_list.append(svg.line(line[0], line[1]))
+                
         svg_list.append("</g>")
 
     # set the viewbox and paper size to the requested IMAGE_SIZE
@@ -264,6 +292,8 @@ def main():
         DEFAULT["MERGE"] = args.merge
     if getattr(args, 'optimise_travel', None) is not None:
         DEFAULT["OPTIMISE_TRAVEL"] = args.optimise_travel
+    if getattr(args, 'compound_paths', None) is not None:
+        DEFAULT["COMPOUND_PATHS"] = args.compound_paths
 
     DEFAULT.update(
         {

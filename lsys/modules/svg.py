@@ -150,3 +150,11 @@ def line(
     """return a line from start_xy to end_xy"""
     styles = f" {dict_to_tags(addnl_styles)}" if addnl_styles else ""
     return f"<line x1='{start_xy[0]}' y1='{start_xy[1]}' x2='{end_xy[0]}' y2='{end_xy[1]}'{styles} />"
+
+def path(points: list[tuple[float, float]], addnl_styles: dict[str, Any] | None = None) -> str:
+    """return a path from a list of points"""
+    if not points:
+        return ""
+    styles = f" {dict_to_tags(addnl_styles)}" if addnl_styles else ""
+    d = f"M {points[0][0]} {points[0][1]} " + " ".join([f"L {p[0]} {p[1]}" for p in points[1:]])
+    return f"<path d='{d}'{styles} />"

@@ -33,7 +33,7 @@ BACKGROUND_COLOR = 'white'
 PRECISION = 0
 
 # Acceptable divisors of 360 used to generate angles
-ANGLE_DIVISORS = [3, 4, 5, 6, 8, 10, 12]
+ANGLE_DIVISORS = [3, 4, 5, 6, 8, 9, 10, 12, 15, 18]
 
 # Directory path where generated SVG files will be saved
 OUTPUT_DIR = '../output/'
@@ -41,12 +41,21 @@ OUTPUT_DIR = '../output/'
 # Filename syntax: 'datetime', 'rules', or 'unix'
 FILENAME = 'rules'
 
+## PEN PLOTTING OPTIMISATIONS
+# ============================
+# Set these flags to true to optimise the SVG for pen plotting (and potentially smaller file size)
+
 # Whether to merge continuous collinear lines
 MERGE = false
 
 # Whether to optimize travel distance (TSP) for pen plotters
 OPTIMISE_TRAVEL = false
 
+# Compound paths: change multiple adjoining lines to a compound path for performance
+COMPOUND_PATHS = false
+
+## SVG STYLING
+# ============
 # SVG styling attributes for the drawn path lines
 [DEFAULT.LINE_STYLE]
 stroke = '#000'

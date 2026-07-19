@@ -79,8 +79,10 @@ def date_string() -> str:
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def set_precision(value: float, precision: int) -> float:
+def set_precision(value: float, precision: int) -> float | int:
     """set the precision of a value"""
+    if precision <= 0:
+        return int(round(value))
     return round(value, precision)
 
 
