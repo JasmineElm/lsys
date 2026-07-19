@@ -145,8 +145,8 @@ def scale_to_fit(object_list: list[tuple[tuple[float, float], tuple[float, float
 
 
 def line(
-    start_xy: tuple[float, float], end_xy: tuple[float, float], addnl_styles: dict[str, Any]
+    start_xy: tuple[float, float], end_xy: tuple[float, float], addnl_styles: dict[str, Any] | None = None
 ) -> str:
     """return a line from start_xy to end_xy"""
-    styles = dict_to_tags(addnl_styles)
-    return f"<line x1='{start_xy[0]}' y1='{start_xy[1]}' x2='{end_xy[0]}' y2='{end_xy[1]}' {styles} />"
+    styles = f" {dict_to_tags(addnl_styles)}" if addnl_styles else ""
+    return f"<line x1='{start_xy[0]}' y1='{start_xy[1]}' x2='{end_xy[0]}' y2='{end_xy[1]}'{styles} />"

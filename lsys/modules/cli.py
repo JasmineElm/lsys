@@ -50,4 +50,5 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("--iterate", type=str, help="Progressively generate iterations of an existing SVG file", default=None)
     parser.add_argument("-n", "--iterations", type=int, help="Number of iterations to generate (used with --iterate)", default=5)
     parser.add_argument("--filename", type=str, choices=["datetime", "rules", "unix"], help="Syntax for generating output filenames")
+    parser.add_argument("--merge", action=argparse.BooleanOptionalAction, help="Merge continuous lines with the same vector")
     return parser.parse_args()

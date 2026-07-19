@@ -15,6 +15,49 @@ from typing import Any
 from modules import cli, lsys, read, svg, utils, variant
 
 
+def merge_continuous_lines(lines):
+    merged = True
+    while merged:
+        merged = False
+        lines.sort(key=lambda x: (x[0], x[1]))
+        
+        starts_at = {}
+        for i, (a, b, w) in enumerate(lines):
+            starts_at.setdefault(a, []).append((b, w, i))
+            
+        to_remove = set()
+        new_lines = []
+        
+        for i, (a, b, w) in enumerate(lines):
+            if i in to_remove:
+                continue
+                
+            merged_this = False
+            if b in starts_at:
+                for b2, w2, j in starts_at[b]:
+                    if j in to_remove or i == j:
+                        continue
+                    if w == w2:
+                        dx1 = b[0] - a[0]
+                        dy1 = b[1] - a[1]
+                        dx2 = b2[0] - b[0]
+                        dy2 = b2[1] - b[1]
+                        
+                        if abs(dx1 * dy2 - dy1 * dx2) < 1e-6:
+                            new_lines.append((a, b2, w))
+                            to_remove.add(i)
+                            to_remove.add(j)
+                            merged = True
+                            merged_this = True
+                            break
+            if not merged_this:
+                new_lines.append((a, b, w))
+                
+        lines = new_lines
+
+    return list(set(lines))
+
+
 def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
     svg_list = []
     # apply precision, sort points to handle backwards lines, and remove duplicates
@@ -34,6 +77,9 @@ def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
         )
         processed_lines.append((pts[0], pts[1], line[2]))
     unique_lines = list(set(processed_lines))
+    
+    if DEFAULT.get("MERGE", False):
+        unique_lines = merge_continuous_lines(unique_lines)
 
     if len(unique_lines) < 5:
         # less than 5 lines, we should break
@@ -44,12 +90,26 @@ def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
         unique_lines, DEFAULT["IMAGE_SIZE"], DEFAULT["BLEED"]
     )
 
-    # draw the lines
+    # group and draw the lines
+    groups = {}
     for line in scaled_lines:
-        style = DEFAULT["LINE_STYLE"].copy()
+        style = DEFAULT.get("LINE_STYLE", {}).copy()
         if line[2] is not None:
             style["stroke-width"] = line[2]
-        svg_list.append(svg.line(line[0], line[1], style))
+        
+        style_key = tuple(sorted(style.items()))
+        if style_key not in groups:
+            groups[style_key] = []
+        groups[style_key].append(line)
+
+    for style_key, lines in groups.items():
+        style_dict = dict(style_key)
+        group_style = svg.dict_to_tags(style_dict)
+        group_tag = f"<g {group_style}>" if group_style else "<g>"
+        svg_list.append(group_tag)
+        for line in lines:
+            svg_list.append(svg.line(line[0], line[1]))
+        svg_list.append("</g>")
 
     # set the viewbox and paper size to the requested IMAGE_SIZE
     DEFAULT["PAPER_SIZE"] = DEFAULT["IMAGE_SIZE"]
@@ -139,6 +199,8 @@ def main():
         DEFAULT["OUTPUT_DIR"] = args.output_dir
     if args.filename is not None:
         DEFAULT["FILENAME"] = args.filename
+    if getattr(args, 'merge', None) is not None:
+        DEFAULT["MERGE"] = args.merge
 
     DEFAULT.update(
         {

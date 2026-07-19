@@ -41,22 +41,25 @@ OUTPUT_DIR = '../output/'
 # Filename syntax: 'datetime', 'rules', or 'unix'
 FILENAME = 'rules'
 
-    # SVG styling attributes for the drawn path lines
-    [DEFAULT.LINE_STYLE]
-    stroke = '#000'
-    stroke-width = 5
-    stroke-linecap = 'square'
+# Whether to merge continuous collinear lines
+MERGE = false
 
-    # Constraints for the --variant and --iterate generators
-    [DEFAULT.VARIANT_CONSTRAINTS]
-    # Probability (0.0 to 1.0) of a rule string mutating at each character
-    RULE_MUTATION_RATE = 0.1
-    # Maximum increase/decrease in N (Recursion Depth)
-    MAX_N_CHANGE = 1
-    # Maximum degrees to alter angles (INITIAL_ANGLE and ROTATE_ANGLE)
-    MAX_ANGLE_CHANGE = 15.0
-    # Allowed instructions for rule mutations
-    ALLOWED_MUTATIONS = ["F", "+", "-", "[", "]", "(", ")", "<", ">", "&", "#", "|"]
-    # Parameters to iterate over during --iterate (e.g., 'rules', 'N', 'angles', 'scale')
-    ITERATED_PARAMETERS = ["rules", "N", "angles"]
+# SVG styling attributes for the drawn path lines
+[DEFAULT.LINE_STYLE]
+stroke = '#000'
+stroke-width = 5
+stroke-linecap = 'square'
+
+# Constraints for the --variant and --iterate generators
+[DEFAULT.VARIANT_CONSTRAINTS]
+# Probability (0.0 to 1.0) of a rule string mutating at each character
+RULE_MUTATION_RATE = 0.1
+# Maximum increase/decrease in N (Recursion Depth)
+MAX_N_CHANGE = 1
+# Maximum degrees to alter angles (INITIAL_ANGLE and ROTATE_ANGLE)
+MAX_ANGLE_CHANGE = 15.0
+# Allowed instructions for rule mutations
+ALLOWED_MUTATIONS = ["F", "+", "-", "[", "]", "(", ")", "<", ">", "&", "#", "|"]
+# Parameters to iterate over during --iterate (e.g., 'rules', 'N', 'angles', 'scale')
+ITERATED_PARAMETERS = ["rules", "N", "angles"]
 
