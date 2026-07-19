@@ -44,6 +44,9 @@ FILENAME = 'rules'
 # Whether to merge continuous collinear lines
 MERGE = false
 
+# Whether to optimize travel distance (TSP) for pen plotters
+OPTIMISE_TRAVEL = false
+
 # SVG styling attributes for the drawn path lines
 [DEFAULT.LINE_STYLE]
 stroke = '#000'

@@ -51,4 +51,5 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("-n", "--iterations", type=int, help="Number of iterations to generate (used with --iterate)", default=5)
     parser.add_argument("--filename", type=str, choices=["datetime", "rules", "unix"], help="Syntax for generating output filenames")
     parser.add_argument("--merge", action=argparse.BooleanOptionalAction, help="Merge continuous lines with the same vector")
+    parser.add_argument("--optimise-travel", action=argparse.BooleanOptionalAction, help="Optimise plotter travel distance (TSP)")
     return parser.parse_args()

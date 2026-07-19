@@ -57,6 +57,64 @@ def merge_continuous_lines(lines):
 
     return list(set(lines))
 
+def optimise_travel(lines):
+    if not lines:
+        return []
+        
+    point_to_lines = {}
+    for i, line in enumerate(lines):
+        pt1 = line[0]
+        pt2 = line[1]
+        point_to_lines.setdefault(pt1, set()).add(i)
+        point_to_lines.setdefault(pt2, set()).add(i)
+        
+    unvisited = set(range(len(lines)))
+    optimized = []
+    
+    current_pt = lines[0][0]
+    
+    while unvisited:
+        next_line_idx = None
+        if current_pt in point_to_lines:
+            for idx in point_to_lines[current_pt]:
+                if idx in unvisited:
+                    next_line_idx = idx
+                    break
+                    
+        if next_line_idx is None:
+            min_dist_sq = float('inf')
+            best_idx = None
+            
+            for i in unvisited:
+                l = lines[i]
+                d1 = (l[0][0] - current_pt[0])**2 + (l[0][1] - current_pt[1])**2
+                if d1 < min_dist_sq:
+                    min_dist_sq = d1
+                    best_idx = i
+                
+                d2 = (l[1][0] - current_pt[0])**2 + (l[1][1] - current_pt[1])**2
+                if d2 < min_dist_sq:
+                    min_dist_sq = d2
+                    best_idx = i
+                    
+            next_line_idx = best_idx
+            
+        assert next_line_idx is not None
+        l = lines[next_line_idx]
+        unvisited.remove(next_line_idx)
+        
+        d1 = (l[0][0] - current_pt[0])**2 + (l[0][1] - current_pt[1])**2
+        d2 = (l[1][0] - current_pt[0])**2 + (l[1][1] - current_pt[1])**2
+        
+        if d1 <= d2:
+            optimized.append((l[0], l[1], l[2]))
+            current_pt = l[1]
+        else:
+            optimized.append((l[1], l[0], l[2]))
+            current_pt = l[0]
+            
+    return optimized
+
 
 def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
     svg_list = []
@@ -103,6 +161,9 @@ def generate_and_save_svg(PARAM_DICT, tree, lines, DEFAULT, args, base_dir):
         groups[style_key].append(line)
 
     for style_key, lines in groups.items():
+        if DEFAULT.get("OPTIMISE_TRAVEL", False):
+            lines = optimise_travel(lines)
+            
         style_dict = dict(style_key)
         group_style = svg.dict_to_tags(style_dict)
         group_tag = f"<g {group_style}>" if group_style else "<g>"
@@ -201,6 +262,8 @@ def main():
         DEFAULT["FILENAME"] = args.filename
     if getattr(args, 'merge', None) is not None:
         DEFAULT["MERGE"] = args.merge
+    if getattr(args, 'optimise_travel', None) is not None:
+        DEFAULT["OPTIMISE_TRAVEL"] = args.optimise_travel
 
     DEFAULT.update(
         {

@@ -43,7 +43,7 @@ def mutate_angle(angle: float, max_change: float) -> float:
     change = random.uniform(-max_change, max_change)
     return (angle + change) % 360
 
-def generate_variant(base_params: dict[str, Any], constraints: dict[str, Any], iterate_only: list[str] = None) -> dict[str, Any]:
+def generate_variant(base_params: dict[str, Any], constraints: dict[str, Any], iterate_only: list[str] | None = None) -> dict[str, Any]:
     """Generates a variant PARAM_DICT based on base_params and constraints."""
     rate = constraints.get("RULE_MUTATION_RATE", 0.1)
     allowed = constraints.get("ALLOWED_MUTATIONS", ["F", "+", "-", "[", "]"])
